@@ -12,7 +12,7 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.\
-Open Code-Editor [(https://code-editor-mq4j3dy2m-coderadleet-gmailcom.vercel.app/)]to view it in your browser.
+Open [Code-Editor](https://reactjs-codeeditor.vercel.app/)to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
