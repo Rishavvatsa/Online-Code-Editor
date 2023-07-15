@@ -3,7 +3,7 @@
 ![image](https://github.com/Rishavvatsa/Online-Code-Editor/assets/95865069/04840b0e-08ce-4763-88ad-45d2caef5601)
 
 
-<a href=" https://reactpen.vercel.app/"> Click to View </a>
+https://reactpen.vercel.app/  <= Click to View Project
 
 ## Available Scripts
 
