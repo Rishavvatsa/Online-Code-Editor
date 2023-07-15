@@ -9,3 +9,10 @@
 .CodeMirror-scroll{
     background: #1d1e22 !important;
 }
+@media (max-width: 768px) {
+    
+    .CodeMirror {
+      height: 200px !important;
+    }
+  }
+  

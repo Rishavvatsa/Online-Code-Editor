@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import Editor from "./Components/Editor";
-import useLocalStorage from "./Context/Dataprovider"
+import useLocalStorage from "./Context/Dataprovider";
 import Header from './Components/Header';
 
-
 function App() {
-  const [html, setHtml] = useLocalStorage('html', '')
-  const [css, setCss] = useLocalStorage('css', '')
-  const [javascript, setJavascript] = useLocalStorage('javascript', '')
-  const [srcDoc, setSrcDoc] = useState('')
+  const [html, setHtml] = useLocalStorage('html', '');
+  const [css, setCss] = useLocalStorage('css', '');
+  const [javascript, setJavascript] = useLocalStorage('javascript', '');
+  const [srcDoc, setSrcDoc] = useState('');
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -18,31 +17,30 @@ function App() {
           <style>${css}</style>
           <script>${javascript}</script>
         </html>
-      `)
-    }, 250)
-    // console.log(srcDoc)
-    return () => clearTimeout(timeout)
-  }, [html, css, javascript])
+      `);
+    }, 250);
+    return () => clearTimeout(timeout);
+  }, [html, css, javascript]);
 
   return (
     <div className="app">
       <Header/>
       <div className="pane top-pane">
         <Editor
-          launguage="xml"
+          language="xml"
           label="HTML"
           value={html}
           onChange={setHtml}
-          
         />
         <Editor
-          launguage="css"
+          language="css"
           label="CSS"
           value={css}
           onChange={setCss}
+          
         />
         <Editor
-          launguage="javascript"
+          language="javascript"
           label="JavaScript"
           value={javascript}
           onChange={setJavascript}
@@ -53,7 +51,7 @@ function App() {
           srcDoc={srcDoc}
           title="output"
           sandbox="allow-scripts"
-          frameBorder="0"
+          frameBorder="1"
           width="100%"
           height="100%"
         ></iframe>
