@@ -1,18 +1,15 @@
-.CodeMirror{
-    height: 340px !important;
-    color: #fff;
-
+.CodeMirror {
+  height: 340px !important;
+  color: #fff;
 }
-.CodeMirror-gutters{
-    background: #1d1e22 !important;
+.CodeMirror-gutters {
+  background: #1d1e22 !important;
 }
-.CodeMirror-scroll{
-    background: #1d1e22 !important;
+.CodeMirror-scroll {
+  background: #1d1e22 !important;
 }
 @media (max-width: 768px) {
-    
-    .CodeMirror {
-      height: 200px !important;
-    }
+  .CodeMirror {
+    height: 200px !important;
   }
-  
+}

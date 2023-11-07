@@ -1,82 +1,216 @@
-import React, { useState } from 'react';
-import { Controlled as CodeMirror } from 'react-codemirror2';
-import 'codemirror/addon/edit/closetag';
-import 'codemirror/addon/edit/closebrackets';
-import 'codemirror/addon/hint/show-hint';
-import 'codemirror/addon/hint/html-hint';
-import 'codemirror/addon/hint/css-hint';
-import 'codemirror/addon/hint/javascript-hint';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/yonce.css';
-import 'codemirror/theme/dracula.css';
-import 'codemirror/theme/material.css';
-import 'codemirror/theme/mdn-like.css';
-import 'codemirror/theme/the-matrix.css';
-import 'codemirror/theme/night.css';
-import 'codemirror/mode/xml/xml';
-import 'codemirror/mode/css/css';
-import 'codemirror/mode/javascript/javascript';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCompressAlt, faExpandAlt } from '@fortawesome/free-solid-svg-icons';
-import '../index.css';
+// React Imports
+import React, { useEffect, useState } from "react";
+// CodeMirror & its Plugin Imports
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { html } from "@codemirror/lang-html";
+import { css } from "@codemirror/lang-css";
+import { xcodeDark } from "@uiw/codemirror-theme-xcode";
+// Icon Imports
+import {
+  ResetIcon,
+  ExpandIcon,
+  DownloadIcon,
+  FallbackResetIcon,
+  FallbackExpandIcon,
+  FallbackDownloadIcon,
+} from "../assets/index";
+// Other Imports
+import { EXTENSION_MAP, INITIAL_CONTENT_MAP } from "../Constants/index";
+import { testUserAgentForMobileDevice } from "../Context/utility";
 
-
-const themeArray = ['dracula', 'material', 'mdn-like', 'the-matrix', 'night','yonce']
-
-const Editor = (props) => {
-  const[theme,setTheme]=useState("dracula");
-  const [open, setOpen] = useState(true);
-  const { language, label, value, onChange } = props;
-
-  const handleChange = (editor, data, value) => {
-    onChange(value);
-  };
-
-  return (
-    <div className={`editor-container ${open ? '' : 'collapsed'}`}>
-      <div className="dropdown "style={{marginTop: "10px"}}>
-        <label for="cars" id="theme">Select Theme: </label>
-        <select name="theme" onChange={(el) => {
-          setTheme(el.target.value)
-        }}>
-          {
-            themeArray.map( theme => (
-              <option className="selected" value={theme}>{theme}</option>
-            ))
-          }
-        </select>
-      </div>
-      <div className="editor-title">
-        {label} 
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          className="expand-collapse-btn"
-        >
-          <FontAwesomeIcon icon={open ? faCompressAlt : faExpandAlt} />
-        </button>
-      </div>
-      <CodeMirror
-      
-        value={value}
-        className="code-mirror-wrapper"
-        onBeforeChange={handleChange}
-        options={{
-          lineWrapping: true,
-          lint: true,
-          mode: language,
-          lineNumbers: true,
-          theme: theme,
-          autoCloseTags:true,
-          autoCloseBrackets:true,
-          extraKeys:{"Ctrl-Space":"autocomplete"}
-          
-          
-        }}
-      />
-      
-    </div>
-  );
+// Language configuration for CodeMirror component based on langauage
+const LANG_CONFIG_MAP = {
+  javascript: [javascript({ jsx: true })],
+  html: [html({})],
+  css: [css({})],
 };
 
-export default Editor;
+export default function Editor(props) {
+  const { language, displayName, value, onChange, animationQueue } = props;
+
+  const file = new Blob([value], { type: `text/${EXTENSION_MAP[language]}` });
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  const [openEditor, setOpenEditor] = useState(!isMobile);
+  const [toolBarButtonsHover, setToolBarButtonsHover] = useState(isMobile);
+  const [showResetDropdown, setShowResetDropdown] = useState(false);
+
+  // Detecting whether device type is mobile or not using user-agent
+  useEffect(() => {
+    setIsMobile(testUserAgentForMobileDevice());
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("click", (e) => {
+      // If click is on reset button - do nothing as we already open it on the onClick prop of the button
+      if (e.target.id === "reset-button") {
+      }
+      // All other clicks - close the dropdown
+      else setShowResetDropdown(false);
+    });
+
+    // Remove event listeners and clear timeout on component unmount to avoid stack overflow
+    return () => {
+      window.removeEventListener("click", (e) => {
+        if (e.target.id === "reset-button") {
+        } else setShowResetDropdown(false);
+      });
+    };
+    // eslint-disable-next-line
+  }, []);
+
+  // Whenever device size changes, we want the editor configs to get affected
+  useEffect(() => {
+    setOpenEditor(!isMobile);
+    setToolBarButtonsHover(isMobile);
+  }, [isMobile]);
+
+  // Functions to manipulate the content of editor
+  const handleChange = (value, viewUpdate) => onChange(value);
+
+  const handleResetEditor = () => onChange(INITIAL_CONTENT_MAP[language]);
+
+  const handleClearEditor = () => onChange("");
+
+  // Functions to show/hide toolbar buttons on hover
+  const handleOnMouseEnterOnToolBarButtons = () =>
+    !isMobile && setToolBarButtonsHover(true);
+
+  const handleOnMouseExitFromToolBarButtons = () =>
+    !isMobile && setToolBarButtonsHover(false);
+
+  // Functions to show/hide dropdown on hover - Desktop devices
+  const handleOnResetButtonHover = () => {
+    if (!isMobile) {
+      setShowResetDropdown(true);
+      handleOnMouseEnterOnToolBarButtons();
+    }
+  };
+
+  const handleOnResetButtonHoverExit = () => {
+    if (!isMobile) {
+      setShowResetDropdown(false);
+      handleOnMouseExitFromToolBarButtons();
+    }
+  };
+
+  // Functions to show/hide dropdown on click - Mobile devices
+  const handleResetButtonClick = () => isMobile && setShowResetDropdown(true);
+
+  const handleDropdownItemClick = (onClick) => {
+    onClick();
+    handleOnResetButtonHoverExit();
+  };
+
+  // Reset button dropdown component
+  const DropDown = () => (
+    <div
+      id="reset-dropdown"
+      className={`reset-dropdown ${showResetDropdown ? "expanded" : ""}`}
+      onMouseEnter={handleOnResetButtonHover}
+      onMouseLeave={handleOnResetButtonHoverExit}
+    >
+      <div
+        id="reset-dropdown"
+        className="reset-dropdown-item"
+        onClick={() => handleDropdownItemClick(handleResetEditor)}
+      >
+        Reset Editor
+      </div>
+      <div
+        id="reset-dropdown"
+        className="reset-dropdown-item"
+        onClick={() => handleDropdownItemClick(handleClearEditor)}
+      >
+        Clear Editor
+      </div>
+    </div>
+  );
+
+  return (
+    <div
+      style={{
+        animation: `${animationQueue}s ease-out 0s 1 slideInLeft`,
+      }}
+      className={`editor-container ${openEditor ? "" : "collapsed"}`}
+    >
+      <div className="editor-toolbar">
+        <div className="editor-title" title={displayName}>
+          {displayName}
+        </div>
+        <div>
+          <div className="editor-buttons-container">
+            <button type="button" className="editor-button">
+              <img
+                id="reset-button"
+                width="17px"
+                height="17px"
+                className="editor-icon reset-icon"
+                alt="Reset icon"
+                title="Reset editor"
+                src={toolBarButtonsHover ? ResetIcon : FallbackResetIcon}
+                onClick={handleResetButtonClick}
+                onMouseEnter={handleOnResetButtonHover}
+                onMouseLeave={handleOnResetButtonHoverExit}
+              />
+              <DropDown />
+            </button>
+            <button type="button" className="editor-button">
+              <a
+                download={`file.${EXTENSION_MAP[language]}`}
+                target="_blank"
+                rel="noreferrer"
+                href={URL.createObjectURL(file)}
+                style={{
+                  textDecoration: "inherit",
+                  color: "inherit",
+                }}
+              >
+                <img
+                  width="17px"
+                  height="17px"
+                  className="editor-icon download-icon"
+                  alt="Download icon"
+                  title={`Download ${language} file`}
+                  src={
+                    toolBarButtonsHover ? DownloadIcon : FallbackDownloadIcon
+                  }
+                  onMouseEnter={handleOnMouseEnterOnToolBarButtons}
+                  onMouseLeave={handleOnMouseExitFromToolBarButtons}
+                />
+              </a>
+            </button>
+            <button
+              type="button"
+              className="editor-button"
+              onClick={() => setOpenEditor((prevOpen) => !prevOpen)}
+            >
+              <img
+                width="17px"
+                height="17px"
+                className="editor-icon expand-icon"
+                alt="Expand/Minimise icon"
+                title="Expand/Minimise"
+                src={toolBarButtonsHover ? ExpandIcon : FallbackExpandIcon}
+                onMouseEnter={handleOnMouseEnterOnToolBarButtons}
+                onMouseLeave={handleOnMouseExitFromToolBarButtons}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* CodeMirror Editor with its configurations */}
+      <CodeMirror
+        value={value}
+        height="100%"
+        className="code-mirror-wrapper"
+        extensions={LANG_CONFIG_MAP[language]}
+        theme={xcodeDark}
+        onChange={handleChange}
+      />
+    </div>
+  );
+}
