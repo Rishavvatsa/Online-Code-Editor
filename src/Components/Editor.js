@@ -205,7 +205,7 @@ export default function Editor(props) {
       {/* CodeMirror Editor with its configurations */}
       <CodeMirror
         value={value}
-        height="100%"
+        height="100%"        
         className="code-mirror-wrapper"
         extensions={LANG_CONFIG_MAP[language]}
         theme={xcodeDark}
