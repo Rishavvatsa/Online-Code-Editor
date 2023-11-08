@@ -1,9 +1,10 @@
 # Getting Started with Online Code Editor
-![image](https://github.com/Rishavvatsa/Online-Code-Editor/assets/95865069/332a8903-2fdb-4234-a243-cbbf754f5e8b)
-![image](https://github.com/Rishavvatsa/Online-Code-Editor/assets/95865069/04840b0e-08ce-4763-88ad-45d2caef5601)
+![Screenshot 2023-11-08 024709](https://github.com/Rishavvatsa/Online-Code-Editor/assets/95865069/1cc534b2-f9ab-4e81-a094-d42073f6272b)
+![image](https://github.com/Rishavvatsa/Online-Code-Editor/assets/95865069/edec7c33-f38c-44b1-9b1d-102e1be98355)
 
 
-https://reactpen.vercel.app/  <= Click to View Project
+
+[https://mycodepen.vercel.app/]  <= Click to View Project
 
 ## Available Scripts
 
